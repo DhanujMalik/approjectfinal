@@ -28,10 +28,9 @@ public class PauseScreen implements Screen {
 
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        // Create the "Resume" button
         TextButton resumeButton = new TextButton("Resume", skin);
-        resumeButton.setSize(200, 80); // Set button size
-        resumeButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f + 50); // Center position
+        resumeButton.setSize(200, 80); 
+        resumeButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f + 50); 
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -40,19 +39,18 @@ public class PauseScreen implements Screen {
         });
 
         TextButton saveExitButton = new TextButton("Save and Exit", skin);
-        saveExitButton.setSize(200, 80); // Set button size
-        saveExitButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 100); // Center position below the Resume button
+        saveExitButton.setSize(200, 80); 
+        saveExitButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 100); 
         saveExitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainPage(game)); // Redirects to the main menu or main page
+                game.setScreen(new MainPage(game)); 
             }
         });
 
         stage.addActor(resumeButton);
         stage.addActor(saveExitButton);
 
-        // Set the input processor to handle the button
         Gdx.input.setInputProcessor(stage);
     }
 
