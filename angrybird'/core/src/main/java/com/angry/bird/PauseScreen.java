@@ -24,10 +24,8 @@ public class PauseScreen implements Screen {
         this.stage = new Stage(new ScreenViewport());
         this.batch = new SpriteBatch();
 
-        // Set up the blurred background
         background = new Texture("blured.jpeg");
 
-        // Load the skin for buttons (assuming you have a skin or use a built-in skin)
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         // Create the "Resume" button
@@ -37,45 +35,37 @@ public class PauseScreen implements Screen {
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Go back to the game screen (resume the game)
                 game.setScreen(new GameScreen(game));
             }
         });
 
-        // Create the "Save and Exit" button
         TextButton saveExitButton = new TextButton("Save and Exit", skin);
         saveExitButton.setSize(200, 80); // Set button size
         saveExitButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 100); // Center position below the Resume button
         saveExitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Implement the saving logic here and exit to the main menu
-                // For now, let's just exit to the main menu
                 game.setScreen(new MainPage(game)); // Redirects to the main menu or main page
             }
         });
 
-        // Add buttons to the stage
         stage.addActor(resumeButton);
         stage.addActor(saveExitButton);
 
-        // Set the input processor to handle the buttons
+        // Set the input processor to handle the button
         Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void show() {
-        // Not much to do here for now
     }
 
     @Override
     public void render(float delta) {
-        // Draw the background image
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-        // Draw the stage (buttons)
         stage.act(delta);
         stage.draw();
     }
@@ -87,22 +77,18 @@ public class PauseScreen implements Screen {
 
     @Override
     public void pause() {
-        // Not needed
     }
 
     @Override
     public void resume() {
-        // Not needed
     }
 
     @Override
     public void hide() {
-        // Not needed
     }
 
     @Override
     public void dispose() {
-        // Dispose resources
         stage.dispose();
         background.dispose();
         batch.dispose();
