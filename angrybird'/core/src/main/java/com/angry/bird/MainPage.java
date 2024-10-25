@@ -21,24 +21,20 @@ public class MainPage implements Screen {
     public MainPage(Main game) {
         this.game = game;
         batch = new SpriteBatch();
-        backgroundTexture = new Texture(Gdx.files.internal("background.jpeg")); // MainPage background
+        backgroundTexture = new Texture(Gdx.files.internal("background.jpeg"));
 
-        // Initialize the stage and set it as input processor
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        // Create the Skin for the UI
         Skin skin = new Skin(Gdx.files.internal("uiskin.json")); // Make sure you have a valid skin file
 
-        // Create the buttons
         TextButton newGameButton = new TextButton("New Game", skin);
         TextButton previousGameButton = new TextButton("Previous Game", skin);
         TextButton exitGameButton = new TextButton("Exit Game", skin);
 
-        // Add button listeners
         newGameButton.addListener(event -> {
             if (event.isHandled()) {
-                startNewGame();  // Logic to start a new game
+                startNewGame(); 
                 return true;
             }
             return false;
@@ -46,7 +42,7 @@ public class MainPage implements Screen {
 
         previousGameButton.addListener(event -> {
             if (event.isHandled()) {
-                loadPreviousGame();  // Logic to load a previous game
+                loadPreviousGame();
                 return true;
             }
             return false;
@@ -60,42 +56,30 @@ public class MainPage implements Screen {
             return false;
         });
 
-        // Create a table for layout
         Table table = new Table();
         table.setFillParent(true);
-        table.center();
-
-        // Add buttons to the table
+        table.center()
         table.add(newGameButton).fillX().uniformX();
         table.row().pad(10, 0, 10, 0); // Add some padding between buttons
         table.add(previousGameButton).fillX().uniformX();
         table.row().pad(20, 0, 10, 0);
         table.add(exitGameButton).fillX().uniformX();
-
-        // Add bottom padding to move the buttons downward
-        table.padBottom(0); // Adjust this value to move buttons further down
-
-        // Add the table to the stage
+        table.padBottom(0); 
         stage.addActor(table);
     }
 
     @Override
     public void show() {
-        // Called when this screen becomes the current screen
     }
 
     @Override
     public void render(float delta) {
-        // Clear the screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Draw the background image
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
-
-        // Update and draw the stage (buttons)
         stage.act(delta);
         stage.draw();
     }
@@ -107,17 +91,14 @@ public class MainPage implements Screen {
 
     @Override
     public void pause() {
-        // Handle pause if needed
     }
 
     @Override
     public void resume() {
-        // Handle resume if needed
     }
 
     @Override
     public void hide() {
-        // Called when this screen is no longer the active screen
     }
 
     @Override
@@ -128,14 +109,10 @@ public class MainPage implements Screen {
     }
 
     private void startNewGame() {
-        // Implement your logic to start a new game
         game.setScreen(new NewGame(game));
-        // Possibly switch to a NewGameScreen or reset game state here
     }
 
     private void loadPreviousGame() {
-        // Implement your logic to load a previous game
         game.setScreen(new PreviousGame(game));
-        // Handle loading saved game data or transition to the previous game state
     }
 }
