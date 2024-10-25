@@ -20,7 +20,6 @@ public class Splash extends ScreenAdapter {
 
     @Override
     public void show() {
-        // Load the splash screen assets
         backgroundTexture = new Texture(Gdx.files.internal("background.jpeg"));
         batch = new SpriteBatch();
     }
@@ -36,14 +35,13 @@ public class Splash extends ScreenAdapter {
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
         if (elapsedTime >= loadingTime) {
-            game.setScreen(new LoginScreen(game)); // Transition to MainPage after loading
+            game.setScreen(new LoginScreen(game)); 
         }
 
     }
 
     @Override
     public void hide() {
-        //Disposing the splash screen assets
         batch.dispose();
         backgroundTexture.dispose();
     }
