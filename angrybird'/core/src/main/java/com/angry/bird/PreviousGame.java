@@ -20,13 +20,12 @@ public class PreviousGame implements Screen {
         this.game = game;
         this.stage = new Stage(new ScreenViewport());
 
-        background = new Texture("game.jpeg"); // Your background image
+        background = new Texture("game.jpeg"); 
 
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        // Create a button for resuming the previous game
         TextButton resumeButton = new TextButton("Resume Previous Game", skin);
-        resumeButton.setSize(300, 80); // Button size
+        resumeButton.setSize(300, 80); 
         resumeButton.setPosition(Gdx.graphics.getWidth() / 2f - 150, Gdx.graphics.getHeight() / 2f);
 
         resumeButton.addListener(new ClickListener() {
@@ -47,7 +46,6 @@ public class PreviousGame implements Screen {
 
     @Override
     public void render(float delta) {
-        // Drawing the background
         game.batch.begin();
         game.batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.batch.end();
