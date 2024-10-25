@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Splash extends ScreenAdapter {
 
-    private Main game;  // Reference to the main game
+    private Main game;  
     private Texture backgroundTexture;
     private SpriteBatch batch;
-    private float elapsedTime = 0f;  // To track the time passed
+    private float elapsedTime = 0f;  
     private float loadingTime = 3f;
 
     public Splash(Main game) {
@@ -28,26 +28,22 @@ public class Splash extends ScreenAdapter {
     @Override
     public void render(float delta) {
         elapsedTime += delta;
-        // Clear the screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Draw the splash screen
+    
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
         if (elapsedTime >= loadingTime) {
             game.setScreen(new LoginScreen(game)); // Transition to MainPage after loading
         }
-        // Simulate loading and switch to the main game screen
 
     }
 
-
-
     @Override
     public void hide() {
-        // Dispose splash screen assets
+        //Disposing the splash screen assets
         batch.dispose();
         backgroundTexture.dispose();
     }
