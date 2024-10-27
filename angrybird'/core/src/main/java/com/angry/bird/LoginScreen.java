@@ -45,7 +45,7 @@ public class LoginScreen implements Screen {
         loginButton.addListener(event -> {
             if (event.isHandled()) {
                 // Handle login logic here
-                handleLogin();
+                loginin();
                 return true;
             }
             return false;
@@ -53,17 +53,17 @@ public class LoginScreen implements Screen {
 
         Table table = new Table();
         table.setFillParent(true);
-        table.padTop(Gdx.graphics.getHeight() / 3f); 
+        table.padTop(Gdx.graphics.getHeight() / 3f);
         table.add(usernameField).fillX().uniformX();
-        table.row().pad(10, 0, 10, 0); 
+        table.row().pad(10, 0, 10, 0);
         table.add(passwordField).fillX().uniformX();
-        table.row().pad(20, 0, 10, 0); 
+        table.row().pad(20, 0, 10, 0);
         table.add(loginButton).fillX().uniformX();
 
         stage.addActor(table);
     }
 
-    private void handleLogin() {
+    private void loginin() {
         game.setScreen(new MainPage(game));
     }
 
@@ -78,7 +78,7 @@ public class LoginScreen implements Screen {
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
-        
+
         stage.act(delta);
         stage.draw();
     }
