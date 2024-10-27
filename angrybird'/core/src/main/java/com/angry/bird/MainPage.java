@@ -34,7 +34,7 @@ public class MainPage implements Screen {
 
         newGameButton.addListener(event -> {
             if (event.isHandled()) {
-                startNewGame(); 
+                gotonewgame();
                 return true;
             }
             return false;
@@ -42,7 +42,7 @@ public class MainPage implements Screen {
 
         previousGameButton.addListener(event -> {
             if (event.isHandled()) {
-                loadPreviousGame();
+                gotopreviousgame();
                 return true;
             }
             return false;
@@ -58,13 +58,13 @@ public class MainPage implements Screen {
 
         Table table = new Table();
         table.setFillParent(true);
-        table.center()
+        table.center();
         table.add(newGameButton).fillX().uniformX();
         table.row().pad(10, 0, 10, 0); // Add some padding between buttons
         table.add(previousGameButton).fillX().uniformX();
         table.row().pad(20, 0, 10, 0);
         table.add(exitGameButton).fillX().uniformX();
-        table.padBottom(0); 
+        table.padBottom(0);
         stage.addActor(table);
     }
 
@@ -108,11 +108,11 @@ public class MainPage implements Screen {
         stage.dispose();
     }
 
-    private void startNewGame() {
+    private void gotonewgame() {
         game.setScreen(new NewGame(game));
     }
 
-    private void loadPreviousGame() {
+    private void gotopreviousgame() {
         game.setScreen(new PreviousGame(game));
     }
 }
