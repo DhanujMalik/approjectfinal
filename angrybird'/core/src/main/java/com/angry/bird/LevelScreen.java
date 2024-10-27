@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class LevelScreen implements Screen {
 
-    private final Main game;  
+    private final Main game;
     private final Stage stage;
     private Texture background;
 
@@ -24,9 +24,9 @@ public class LevelScreen implements Screen {
 
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        TextButton level1Button = new TextButton("Level 1", skin);
-        TextButton level2Button = new TextButton("Level 2", skin);
-        TextButton level3Button = new TextButton("Level 3", skin);
+        TextButton level1Button = new TextButton("EASY", skin);
+        TextButton level2Button = new TextButton("MEDIUM", skin);
+        TextButton level3Button = new TextButton("HARD", skin);
 
         level1Button.setSize(100, 40);
         level2Button.setSize(100, 40);
@@ -39,21 +39,21 @@ public class LevelScreen implements Screen {
         level1Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game));  
+                game.setScreen(new GameScreen(game));
             }
         });
 
         level2Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game)); 
+                game.setScreen(new GameScreen(game));
             }
         });
 
         level3Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game));  
+                game.setScreen(new GameScreen(game));
             }
         });
 
