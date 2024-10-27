@@ -16,47 +16,36 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class GameScreen implements Screen {
-    private Stage stage;
-    private Main game;
-    private Texture backgroundTexture;
-    private SpriteBatch batch;
-    private ShapeRenderer shapeRenderer; 
+    private final Stage stage;
+    private final Main game;
+    private final Texture backgroundTexture;
+    private final SpriteBatch batch;
+    private final ShapeRenderer shapeRenderer;
 
     public GameScreen(Main game) {
         this.game = game;
-        stage = new Stage(new ScreenViewport());
+        this.stage = new Stage(new ScreenViewport());
+        this.batch = new SpriteBatch();
+        this.shapeRenderer = new ShapeRenderer();
+
+        // Set input processor and initialize background
         Gdx.input.setInputProcessor(stage);
+        this.backgroundTexture = new Texture(Gdx.files.internal("game.jpeg"));
 
-       
-        backgroundTexture = new Texture(Gdx.files.internal("game.jpeg"));
-        batch = new SpriteBatch();
-
-        
-        shapeRenderer = new ShapeRenderer();
-
-       
-        createPauseButton();
+        pausebutton();
     }
 
-    private void createPauseButton() {
-        
-        BitmapFont font = new BitmapFont(); 
-
-        
+    private void pausebutton() {
+        BitmapFont font = new BitmapFont();
         TextButtonStyle textButtonStyle = new TextButtonStyle();
-        textButtonStyle.font = font; 
-
-        
-        textButtonStyle.up = null;
+        textButtonStyle.font = font;
+        textButtonStyle.up = null; // Customize as needed
 
         TextButton pauseButton = new TextButton("", textButtonStyle);
+        pauseButton.setSize(30, 30);
+        pauseButton.setPosition(Gdx.graphics.getWidth() - 40, Gdx.graphics.getHeight() - 40);
 
-        pauseButton.setWidth(30);  
-        pauseButton.setHeight(30);
-        pauseButton.setPosition(Gdx.graphics.getWidth() - pauseButton.getWidth() - 10,
-            Gdx.graphics.getHeight() - pauseButton.getHeight() - 10);
-
-       
+        // Add listener to handle pause functionality
         pauseButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -73,17 +62,21 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        // Clear screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // Draw background image
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
+        // Draw the pause button indicator
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.YELLOW);
-        shapeRenderer.circle(Gdx.graphics.getWidth() - 35, Gdx.graphics.getHeight() - 35, 30); // Smaller circle
+        shapeRenderer.circle(Gdx.graphics.getWidth() - 35, Gdx.graphics.getHeight() - 35, 30);
         shapeRenderer.end();
 
+        // Update and draw stage
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
@@ -110,6 +103,6 @@ public class GameScreen implements Screen {
         stage.dispose();
         batch.dispose();
         backgroundTexture.dispose();
-        shapeRenderer.dispose(); 
+        shapeRenderer.dispose();
     }
 }
