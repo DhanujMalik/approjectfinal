@@ -1,0 +1,227 @@
+package com.angry.bird;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+public class EasyLevel implements Screen, Serializable {
+    private Main game;
+    private final Stage stage;
+    private final SpriteBatch batch;
+    private final ShapeRenderer shapeRenderer;
+    private final Texture backgroundTexture;
+
+    private Queue<Bird> birds; // Queue for 8 user-selected birds
+    private Bird currentBird; // Current bird in play
+    private Catapult catapult; // Catapult for launching birds
+    private boolean isBirdLaunched = false; // Whether the bird is launched
+    private List<Pig> pigs = new ArrayList<>(); // Pigs in the level
+
+    private boolean isGamePaused = false; // Track if the game is paused
+
+    // Constructor for EasyLevel, accepts a list of selected birds
+    public EasyLevel(Main game, String selectedBirdType) {
+        this.game = game;
+        this.stage = new Stage(new ScreenViewport());
+        this.batch = new SpriteBatch();
+        this.shapeRenderer = new ShapeRenderer();
+        this.backgroundTexture = new Texture(Gdx.files.internal("easy_level_bg.png"));
+
+        // Initialize birds based on the selected type
+        this.birds = new LinkedList<>();
+        for (int i = 0; i < 8; i++) {
+            // Add 8 birds of the selected type
+            switch (selectedBirdType) {
+                case "Red":
+                    birds.add(new RedBird(100, 150)); // RedBird class should be defined
+                    break;
+                case "Blue":
+                    birds.add(new BlueBird(100, 150)); // BlueBird class should be defined
+                    break;
+                case "Yellow":
+                    birds.add(new YellowBird(100, 150)); // YellowBird class should be defined
+                    break;
+            }
+        }
+
+        // Initialize game elements
+        initPigs();
+        this.catapult = new Catapult(100, 150); // Example position for the catapult
+        loadNextBird(); // Load the first bird
+        setupPauseButton(); // Set up the pause button
+
+        // Set input processor
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    // Initialize pigs for the level
+    private void initPigs() {
+        pigs.add(new SmallPig(500, 100, 1, "small_pig.png")); // Small pig
+        pigs.add(new SmallPig(550, 120, 1, "small_pig.png")); // Small pig
+        pigs.add(new MediumPig(600, 140, 2, "medium_pig.png")); // Medium pig
+    }
+
+    // Load the next bird from the queue
+    private void loadNextBird() {
+        if (!birds.isEmpty()) {
+            currentBird = birds.poll();
+        } else {
+            currentBird = null;
+        }
+    }
+
+    // Set up the pause button
+    private void setupPauseButton() {
+        TextButtonStyle textButtonStyle = new TextButtonStyle();
+        textButtonStyle.font = new BitmapFont();
+
+        TextButton pauseButton = new TextButton("Pause", textButtonStyle);
+        pauseButton.setSize(100, 50);
+        pauseButton.setPosition(Gdx.graphics.getWidth() - 120, Gdx.graphics.getHeight() - 70);
+
+        pauseButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                saveGame(); // Save game state on pause
+                game.setScreen(new PauseScreen(game)); // Transition to pause screen
+            }
+        });
+
+        stage.addActor(pauseButton);
+    }
+
+    @Override
+    public void show() {}
+
+    @Override
+    public void render(float delta) {
+        if (isGamePaused) return; // Skip rendering if game is paused
+
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Draw background
+        batch.begin();
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+
+        // Render game objects
+        renderGameObjects();
+
+        // Handle bird updates
+        if (isBirdLaunched && currentBird != null) {
+            currentBird.update(delta);
+            if (currentBird.getPosition().y < 0 || currentBird.getPosition().x > Gdx.graphics.getWidth()) {
+                isBirdLaunched = false;
+                loadNextBird();
+            }
+        }
+
+        // Check for win or lose conditions
+        checkGameState();
+
+        // Update and draw stage
+        stage.act(delta);
+        stage.draw();
+    }
+
+    // Render game objects like catapult, birds, and pigs
+    private void renderGameObjects() {
+        batch.begin();
+
+        // Render catapult
+        catapult.render(batch);
+
+        // Render current bird
+        if (currentBird != null) {
+            currentBird.render(batch);
+        }
+
+        // Render pigs
+        for (Pig pig : pigs) {
+            if (!pig.isDestroyed()) {
+                pig.render(batch);
+            }
+        }
+
+        batch.end();
+    }
+
+    // Check if the game is won or lost
+    private void checkGameState() {
+        if (pigs.isEmpty()) {
+            game.setScreen(new LevelCompleteScreen(game)); // Player wins
+        } else if (birds.isEmpty() && !isBirdInMotion()) {
+            game.setScreen(new GameOverScreen(game)); // Player loses
+        }
+    }
+
+    // Check if the bird is still in motion
+    private boolean isBirdInMotion() {
+        return isBirdLaunched && currentBird != null;
+    }
+
+    // Save game state to file
+    private void saveGame() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("easy_level_save.dat"))) {
+            oos.writeObject(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Load the game state from file
+    public static EasyLevel loadGame(Main game) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("easy_level_save.dat"))) {
+            EasyLevel savedLevel = (EasyLevel) ois.readObject();
+            savedLevel.game = game; // Restore the reference to the game
+            return savedLevel;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+    }
+
+    @Override
+    public void pause() {
+        isGamePaused = true;
+    }
+
+    @Override
+    public void resume() {
+        isGamePaused = false;
+    }
+
+    @Override
+    public void hide() {}
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+        batch.dispose();
+        backgroundTexture.dispose();
+        shapeRenderer.dispose();
+    }
+}
