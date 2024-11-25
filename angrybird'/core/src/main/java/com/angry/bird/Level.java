@@ -1,17 +1,10 @@
-import java.util.List;
+package com.angry.bird;
 
-public class Level {
-    private int number;
-    private List<GameObject> gameObjects;
-    private List<Bird> birds;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-    public void addGameObject(GameObject obj) {
-        gameObjects.add(obj);
-    }
-    public void removeGameObject(GameObject obj) {
-        gameObjects.remove(obj);
-    }
-    public boolean checkCompletion() {
-        return false;
-    }
+public interface Level {
+    void initialize();       // Set up pigs, birds, and structures for the level
+    void render(SpriteBatch batch);  // Render the level
+    void update(float delta);        // Update the state of the level
+    void dispose();          // Dispose of resources
 }
