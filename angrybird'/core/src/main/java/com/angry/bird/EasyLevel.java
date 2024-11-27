@@ -22,20 +22,27 @@ public class EasyLevel implements Screen {
     private final SpriteBatch batch;
     private final Texture backgroundSkyTexture;
     private final Texture groundTexture;
+    private final Texture woodenBoxTexture;
+    private final Texture catapultTexture;
 
-    private World world; // Box2D World
-    private Box2DDebugRenderer debugRenderer; // Debug renderer for Box2D
-    private Body groundBody; // Ground body
-    private Queue<Bird> birds; // Queue for birds
-    private Bird currentBird; // Current bird in play
-    private List<Pig> pigs; // Pigs in the level
-    private List<Body> structures; // Structures in the level
-    private boolean isBirdLaunched = false; // Whether the bird is launched
+    private World world;
+    private Box2DDebugRenderer debugRenderer;
+    private Body groundBody;
+    private Queue<Bird> birds;
+    private Bird currentBird;
+    private List<Pig> pigs;
+    private List<Vector2> woodenBoxPositions;
+    private boolean isBirdLaunched = false;
 
     private Skin skin;
     private Label birdsRemainingLabel;
     private Label pigsRemainingLabel;
-    private boolean isPaused = false; // Pause state
+    private boolean isPaused = false;
+
+    private Texture smallPigTexture;
+    private Texture mediumPigTexture;
+
+    private final Vector2 catapultPosition = new Vector2(100, 100);
 
     // Constructor
     public EasyLevel(Main game, String selectedBirdType) {
@@ -44,11 +51,16 @@ public class EasyLevel implements Screen {
         this.batch = new SpriteBatch();
         this.backgroundSkyTexture = new Texture(Gdx.files.internal("sky.png"));
         this.groundTexture = new Texture(Gdx.files.internal("ground.png"));
+        this.woodenBoxTexture = new Texture(Gdx.files.internal("woodenbox.png"));
+        this.catapultTexture = new Texture(Gdx.files.internal("catapult.png"));
+
+        this.smallPigTexture = new Texture(Gdx.files.internal("smallpig.png"));
+        this.mediumPigTexture = new Texture(Gdx.files.internal("mediumpig.png"));
 
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         // Initialize Box2D world
-        this.world = new World(new Vector2(0, -9.8f), true); // Gravity
+        this.world = new World(new Vector2(0, -9.8f), true);
         this.debugRenderer = new Box2DDebugRenderer();
 
         // Create ground body
@@ -58,10 +70,10 @@ public class EasyLevel implements Screen {
         this.birds = new LinkedList<>();
         initBirds(selectedBirdType);
 
-        // Initialize pigs and structures
+        // Initialize pigs and wooden structures
         this.pigs = new ArrayList<>();
         initPigs();
-        initStructures();
+        initWoodenStructure();
 
         // Add HUD
         addHUD();
@@ -95,7 +107,6 @@ public class EasyLevel implements Screen {
         pauseButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Switch to PauseScreen and pass the current EasyLevel instance
                 game.setScreen(new PauseScreen(game, EasyLevel.this));
             }
         });
@@ -103,19 +114,18 @@ public class EasyLevel implements Screen {
         stage.addActor(pauseButton);
     }
 
-
     private void initBirds(String selectedBirdType) {
         for (int i = 0; i < 8; i++) {
             Bird bird;
             switch (selectedBirdType) {
                 case "Red":
-                    bird = new RedBird(world, 100, 150);
+                    bird = new RedBird(world, catapultPosition.x, catapultPosition.y);
                     break;
                 case "Blue":
-                    bird = new BlueBird(world, 100, 150);
+                    bird = new BlueBird(world, catapultPosition.x, catapultPosition.y);
                     break;
                 case "Yellow":
-                    bird = new YellowBird(world, 100, 150);
+                    bird = new YellowBird(world, catapultPosition.x, catapultPosition.y);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown bird type: " + selectedBirdType);
@@ -130,7 +140,7 @@ public class EasyLevel implements Screen {
         groundBody = world.createBody(groundDef);
 
         PolygonShape groundShape = new PolygonShape();
-        groundShape.setAsBox(Gdx.graphics.getWidth(), 10); // Ground dimensions
+        groundShape.setAsBox(Gdx.graphics.getWidth(), 10);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = groundShape;
@@ -141,34 +151,17 @@ public class EasyLevel implements Screen {
     }
 
     private void initPigs() {
-        pigs.add(new SmallPig(world, 500, 100));
-        pigs.add(new SmallPig(world, 550, 120));
-        pigs.add(new MediumPig(world, 600, 140));
-        pigs.add(new LargePig(world, 650, 160));
+        pigs.add(new SmallPig(world, 200, 20)); // On ground
+        pigs.add(new SmallPig(world, 300, 120)); // On structure
+        pigs.add(new MediumPig(world, 400, 120)); // On structure
     }
 
-    private void initStructures() {
-        structures = new ArrayList<>();
-        structures.add(createStaticBox(200, 50, 50, 100)); // Example structure
-    }
-
-    private Body createStaticBox(float x, float y, float width, float height) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(x, y);
-        Body body = world.createBody(bodyDef);
-
-        PolygonShape boxShape = new PolygonShape();
-        boxShape.setAsBox(width / 2, height / 2);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = boxShape;
-        fixtureDef.density = 1f;
-        fixtureDef.friction = 0.5f;
-        fixtureDef.restitution = 0.3f;
-        body.createFixture(fixtureDef);
-
-        boxShape.dispose();
-        return body;
+    private void initWoodenStructure() {
+        woodenBoxPositions = Arrays.asList(
+                new Vector2(250, 50),
+                new Vector2(300, 50),
+                new Vector2(350, 50)
+        );
     }
 
     private void loadNextBird() {
@@ -205,15 +198,25 @@ public class EasyLevel implements Screen {
 
         batch.begin();
         batch.draw(backgroundSkyTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.end();
+        batch.draw(groundTexture, 0, 0, Gdx.graphics.getWidth(), 100);
+        batch.draw(catapultTexture, catapultPosition.x - 50, catapultPosition.y - 50, 100, 100);
 
-        // Render game objects
+        // Draw wooden boxes
+        for (Vector2 position : woodenBoxPositions) {
+            batch.draw(woodenBoxTexture, position.x - 25, position.y - 25, 50, 50);
+        }
+
+        // Draw pigs
         for (Pig pig : pigs) {
             pig.render(batch);
         }
+
+        // Draw current bird
         if (currentBird != null) {
             currentBird.render(batch);
         }
+
+        batch.end();
 
         debugRenderer.render(world, stage.getCamera().combined);
 
@@ -247,6 +250,10 @@ public class EasyLevel implements Screen {
         batch.dispose();
         backgroundSkyTexture.dispose();
         groundTexture.dispose();
+        woodenBoxTexture.dispose();
+        catapultTexture.dispose();
+        smallPigTexture.dispose();
+        mediumPigTexture.dispose();
         world.dispose();
         debugRenderer.dispose();
         stage.dispose();
