@@ -15,7 +15,7 @@ public class NewGame implements Screen {
     private final Stage stage;
     private final Texture backgroundTexture;
 
-    private String selectedBirdType = "Red"; // Default bird type (Red)
+    private String selectedBirdType = "Red";
 
     public NewGame(Main game) {
         this.game = game;
@@ -25,12 +25,10 @@ public class NewGame implements Screen {
 
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        // Create bird selection buttons
         TextButton redBirdButton = new TextButton("Red Bird", skin);
         TextButton blueBirdButton = new TextButton("Blue Bird", skin);
         TextButton yellowBirdButton = new TextButton("Yellow Bird", skin);
 
-        // Set button sizes and positions
         redBirdButton.setSize(150, 50);
         blueBirdButton.setSize(150, 50);
         yellowBirdButton.setSize(150, 50);
@@ -39,7 +37,6 @@ public class NewGame implements Screen {
         blueBirdButton.setPosition(Gdx.graphics.getWidth() / 2f - 75, Gdx.graphics.getHeight() / 2f);
         yellowBirdButton.setPosition(3 * Gdx.graphics.getWidth() / 4f - 75, Gdx.graphics.getHeight() / 2f);
 
-        // Add listeners to buttons to select the bird type
         redBirdButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -61,7 +58,6 @@ public class NewGame implements Screen {
             }
         });
 
-        // Create a "Play" button to proceed to the game screen
         TextButton playButton = new TextButton("Play", skin);
         playButton.setSize(150, 50);
         playButton.setPosition(Gdx.graphics.getWidth() / 2f - 75, Gdx.graphics.getHeight() / 4f);
@@ -72,8 +68,7 @@ public class NewGame implements Screen {
                 game.setScreen(new LevelScreen(game, selectedBirdType));
             }
         });
-
-        // Add actors to the stage
+        
         stage.addActor(redBirdButton);
         stage.addActor(blueBirdButton);
         stage.addActor(yellowBirdButton);
@@ -82,12 +77,10 @@ public class NewGame implements Screen {
 
     @Override
     public void render(float delta) {
-        // Render the background
         game.batch.begin();
         game.batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.batch.end();
 
-        // Render the stage
         stage.act(delta);
         stage.draw();
     }
