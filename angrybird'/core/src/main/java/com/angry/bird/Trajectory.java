@@ -13,7 +13,6 @@ public class Trajectory {
         this.velocity = velocity;
     }
 
-    // Simulate trajectory for a given time
     public Vector2 predictPosition(float time) {
         float x = startPosition.x + velocity.x * time;
         float y = startPosition.y + velocity.y * time + 0.5f * GRAVITY * time * time;
